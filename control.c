@@ -1,7 +1,26 @@
 #include "main.h"
 
+//gets the contents of storytext.txt file
+char *getstory(){
+  FILE *fp;
+  struct stat sb;
+  stat("storytext.txt", &sb);
+  // If the story doesn't exist
+  if ((fp = fopen("storytext.txt", "r")) == NULL) {
+    printf("No story exists!\n");
+    exit(1);
+  } else {
+    int size = sb.st_size;
+    char *story = malloc(size);
+    read(fileno(fp), story, size);
+    fclose(fp);
+    return story;
+  }
+}
+
 //views the contents of storytext.txt file
 void viewstory(){
+  /*
   char * line = NULL;
   size_t num = 0;
   ssize_t read;
@@ -18,6 +37,10 @@ void viewstory(){
     printf("\nEnd of story\n");
     fclose(fp);
   }
+  */
+  char *story = getstory();
+  printf("Viewing story:\n%s\n", story);
+  free(story);
 }
 
 //creates a semaphore... or doesnt
