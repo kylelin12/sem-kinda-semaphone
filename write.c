@@ -33,7 +33,7 @@ int main(){
   printf("Rules of the game:\n1. Once in, we should display the last line added to the story\n2. We will prompt the use for the next line.\n");
 
   // Does a semaphore exist?
-  if (sem_id = semget(SEM_KEY, 1, 0) == -1) {
+  if ( (sem_id = semget(SEM_KEY, 1, 0)) == -1) {
     printf("No story exists. You need to make one!\n");
     exit(1);
   }
