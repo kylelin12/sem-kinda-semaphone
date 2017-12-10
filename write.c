@@ -67,19 +67,15 @@ int main(){
   // Write to file
   write_story(fd, line);
   //write_story(line);
-  printf("\nTESTING\n");
+  
   // Size of new line
   //int *new_size = (int *)strlen(line);
   //size = new_size;
   *size = strlen(line);
-  printf("\nTESTING2\n");
   shmdt(size);
-  printf("\nTESTING3\n");
   // UP(semaphore)
   sbuf.sem_op = 1;
-  printf("\nTESTING4\n");
   semop(sem_id, &sbuf, 1);
-  printf("\nTESTING5\n");
 
   return 0;
 
