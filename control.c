@@ -54,7 +54,7 @@ void semaphore_create(){
     su.val = 1;
     semctl(sem_id, 0, SETVAL, su);
     printf("semaphore created: %d\n", sem_id);
-    printf("value set: %s\n", su);
+    printf("value set: %d\n", semctl(sem_id,0,GETALL,su));
   } 
   else{
     // semaphore exists
