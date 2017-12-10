@@ -20,13 +20,9 @@ void last_line(int fd, int *size) {
 void write_story(int fd, char *line) {
   lseek(fd, 0, SEEK_END);
   write(fd, line, strlen(line));
-  //FILE *fp = fopen("storytext.txt", "a");
-  //fprintf(fp, "%s", line);
-  //close(fd);
 }
 
 int main(){
-  //FILE  *fp;
   int fd;
   int shm_id;
   int sem_id;
@@ -51,7 +47,6 @@ int main(){
   semop(sem_id, &sbuf, 1);
   printf("Semaphore: Okay all done. That took 2^64 seconds to complete. You can do whatever you want now.\n");
 
-  //fp = fopen("storytext.txt", "r");
   shm_id = shmget(SHM_KEY, sizeof(int), 0);
   int *size = shmat(shm_id, 0, 0);
   fd = open("storytext.txt", O_RDWR | O_APPEND);
@@ -68,11 +63,11 @@ int main(){
   write_story(fd, line);
   //write_story(line);
   
+
   // Size of new line
-  //int *new_size = (int *)strlen(line);
-  //size = new_size;
   *size = strlen(line);
   shmdt(size);
+
   // UP(semaphore)
   sbuf.sem_op = 1;
   semop(sem_id, &sbuf, 1);
