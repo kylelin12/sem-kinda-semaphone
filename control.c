@@ -1,5 +1,18 @@
 #include "main.h"
 
+//views the contents of storytext.txt file
+void viewstory(){
+  char * line = NULL;
+  size_t num = 0;
+  ssize_t read;
+  FILE *fp = fopen("storytext.txt", "r");
+  while ((read = getline(&line, &num, fp)) != -1) {
+    printf("%s", line);
+  }
+  printf("\n");
+  fclose(fp);
+}
+
 //creates a semaphore... or doesnt.
 void s_create(char * n){
   int id = semget(KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
@@ -11,12 +24,14 @@ void s_create(char * n){
     semctl(id, 0, SETVAL, semaphore);
     printf("semaphore created: %d\n", id);
     printf("value set: %s\n", n);
-    FILE *fp = fopen("storytext.txt", "w");
+    //makes a new story
+    FILE *fp = fopen("storytext.txt", "ab+");
     fclose(fp);
+    printf("new storytext.txt created\n");
   } 
   else{
     // semaphore exists
-    printf("semaphore already exists\n");
+    printf("semaphore & a story already exist\n");
   }
 }
 
@@ -25,49 +40,34 @@ void s_value(){
   int id = semget(KEY, 0, 0);
   //error
   if(id == -1){
-    printf("error: semaphore doesnt exist or no access to it\n");
+    printf("error: semaphore & story dont exist or no access to them\n");
   }
   else{
-    printf("semaphore value: %d\n", semctl(id, 0, GETVAL));
+    viewstory();
+    //printf("semaphore value: %d\n", semctl(id, 0, GETVAL));
   }
 }
 
 //removes the semaphore... or doesnt
 void s_remove(){
-  char * line = NULL;
-  size_t num = 0;
-  ssize_t read;
-  FILE fp = fopen("storytext.txt", "r");
-  while ((read = getline(&line, &num, fp)) != -1) {
-    printf("%s\n", line);
-  }
   int id = semget(KEY, 0, 0);
   //error
   if(id == -1){
     printf("error: semaphore doesnt exist or no access to it\n");
   }
   else{
-    char * line = NULL;
-    size_t num = 0;
-    ssize_t read;
-    FILE fp = fopen("storytext.txt", "r");
-    while ((read = getline(&line, &num, fp)) != -1) {
-      printf("%s\n", line);
+    viewstory();
+    if(remove("storytext.txt") == 0){
+      printf("Deleted successfully\n");
     }
-    fclose(fp);
+    else{
+      printf("Unable to delete the story\n");
+    }
     printf("semaphore removed %d\n", semctl(id, 0, IPC_RMID)); 
   }
 }
 
 int main(int argc, char *argv[]){
-  char * line = NULL;
-  size_t num = 0;
-  ssize_t read;
-  FILE fp = fopen("storytext.txt", "r");
-  while ((read = getline(&line, &num, fp)) != -1) {
-    printf("%s\n", line);
-  }
-  fclose(fp);
   /*
     -c N
     Create a semaphore and set its value to N
@@ -79,7 +79,7 @@ int main(int argc, char *argv[]){
       return 1;
     }
     else{
-      create(argv[2]);
+      s_create(argv[2]);
       return 0;
     }
   }
@@ -93,7 +93,7 @@ int main(int argc, char *argv[]){
       printf("Invalid number of Arguments\n");
       return 1;
     }
-    value();
+    s_value();
     return 0;
   }
 
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]){
       printf("Invalid number of Arguments\n");
       return 1;
     }
-    removes();
+    s_remove();
     return 0;
   }
   
