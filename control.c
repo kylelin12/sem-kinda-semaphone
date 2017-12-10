@@ -57,9 +57,9 @@ void story_create(){
 //creates a shared memory... or doesnt.
 void sm_create(){
   //create new shared memory
-  int sm = shmget(SHM_KEY, 1000, IPC_CREAT | IPC_EXCL); 
-  if (sm != -1){
-    shmat(sm, 0, 0);
+  int sm_id = shmget(SHM_KEY, sizeof(double), IPC_CREAT | IPC_EXCL); 
+  if (sm_id != -1){
+    shmat(sm_id, 0, 0);
     printf("shared memory created: %d\n", SHM_KEY);
   }
   else{
