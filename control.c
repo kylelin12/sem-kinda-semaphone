@@ -47,9 +47,14 @@ void semaphore_create(){
 //creates a story... or doesnt.
 void story_create(){
   int fd;
-  fd = open("storytext.txt", O_CREAT | O_TRUNC, 0644);
-  printf("created storytext.txt\n");
-  close(fd);
+  if( access("storytext.txt", F_OK) == -1 ){
+    fd = open("storytext.txt", O_CREAT | O_TRUNC, 0644);
+    printf("created storytext.txt\n");
+    close(fd);
+  }
+  else{
+    printf("story already exists!\n");
+  }
 }
 
 //creates a shared memory... or doesnt.
