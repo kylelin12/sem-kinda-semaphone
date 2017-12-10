@@ -8,34 +8,28 @@ static void sighandler(int signo){
   }
 }
 
-void last_line(FILE *fp, int *size) {
+void last_line(int fd, int *size) {
   printf("The last line entered was: \n");
-  int *bad = (int *)-1;
-  if(size == bad){
-    printf("\n");
-  }
-  else{
-    char *lline = (char *)calloc(1, *size + 1);
-    lseek(fileno(fp), -1 * *size, SEEK_END);
-    read(fileno(fp), lline, *size);
-    printf("%s\n", lline);
-    free(lline);
-  }
+  char *lline = (char *)calloc(1, *size + 1);
+  lseek(fd, -1 * *size, SEEK_END);
+  read(fd, lline, *size);
+  printf("%s\n", lline);
+  free(lline);
 }
 
-void write_story(char *line) {
-  //lseek(fileno(fp), 0, SEEK_END);
-  //write(fileno(fp), line, strlen(line));
-  FILE *fp = fopen("storytext.txt", "a");
-  fprintf(fp, "%s", line);
-  fclose(fp);
+void write_story(int fd, char *line) {
+  lseek(fd, 0, SEEK_END);
+  write(fd, line, strlen(line));
+  //FILE *fp = fopen("storytext.txt", "a");
+  //fprintf(fp, "%s", line);
+  //close(fd);
 }
 
 int main(){
-  FILE  *fp;
+  //FILE  *fp;
+  int fd;
   int shm_id;
   int sem_id;
-  int *size;
 
   signal(SIGINT, sighandler);
 
@@ -57,11 +51,12 @@ int main(){
   semop(sem_id, &sbuf, 1);
   printf("Semaphore: Okay all done. That took 2^64 seconds to complete. You can do whatever you want now.\n");
 
-  fp = fopen("storytext.txt", "r");
+  //fp = fopen("storytext.txt", "r");
   shm_id = shmget(SHM_KEY, sizeof(int), 0);
-  size = shmat(shm_id, 0, 0);
+  int *size = shmat(shm_id, 0, 0);
+  fd = open("storytext.txt", O_RDWR | O_APPEND);
 
-  last_line(fp, size); // Prints latest line
+  last_line(fd, size); // Prints latest line
 
   // User input
   printf("\nPlease input the next line:\n");
@@ -69,14 +64,14 @@ int main(){
   fgets(line, sizeof(line), stdin);
   printf("You inputted: %s\n", line);
 
-  fclose(fp);
   // Write to file
-  //write_story(fp, line);
-  write_story(line);
+  write_story(fd, line);
+  //write_story(line);
   printf("\nTESTING\n");
   // Size of new line
-  int *new_size = (int *)strlen(line);
-  size = new_size;
+  //int *new_size = (int *)strlen(line);
+  //size = new_size;
+  *size = strlen(line);
   printf("\nTESTING2\n");
   shmdt(size);
   printf("\nTESTING3\n");

@@ -2,18 +2,18 @@
 
 //gets the contents of storytext.txt file
 char *getstory(){
-  FILE *fp;
+  //FILE *fp;
   struct stat sb;
   stat("storytext.txt", &sb);
   // If the story doesn't exist
-  if ((fp = fopen("storytext.txt", "r")) == NULL) {
+  int fd;
+  if ((fd = open("storytext.txt", O_RDONLY)) == -1) {
     printf("No story exists!\n");
     exit(1);
   } else {
     int size = sb.st_size;
-    char *story = malloc(size);
-    read(fileno(fp), story, size);
-    fclose(fp);
+    char *story = calloc(1, size + 1);
+    read(fd, story, size);
     return story;
   }
 }
@@ -46,15 +46,16 @@ void viewstory(){
 //creates a semaphore... or doesnt
 void semaphore_create(){
   int sem_id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
+  int val;
   // if -1, it existed, if not, semaphore didnt exist
-  if (sem_id != -1){
+  if (sem_id){
     // create a semaphore
     int semaphore;
     union semun su;
     su.val = 1;
-    semctl(sem_id, 0, SETVAL, su);
+    val = semctl(sem_id, 0, SETVAL, su);
     printf("semaphore created: %d\n", sem_id);
-    printf("value set: %d\n", semctl(sem_id,0,GETALL,su));
+    printf("value set: %d\n", val);
   } 
   else{
     // semaphore exists
@@ -66,7 +67,7 @@ void semaphore_create(){
 void story_create(){
   //makes a new story
   //wb+: Truncate to zero length or create file for update
-  FILE *fp = fopen("storytext.txt", "wb+");
+  /*FILE *fp = fopen("storytext.txt", "wb+");
   if(fp == NULL){
     //story might exist or something may have happened to path configs
     printf("Error in trying to create a new storytext.txt\n");
@@ -74,15 +75,20 @@ void story_create(){
   else{
     fclose(fp);
     printf("new storytext.txt created\n");
-  }
+  }*/
+
+  int fd;
+  fd = open("storytext.txt", O_CREAT | O_TRUNC, 0644);
+  printf("created storytext.txt\n");
+  close(fd);
 }
 
 //creates a shared memory... or doesnt.
 void sm_create(){
   //create new shared memory
-  int sm_id = shmget(SHM_KEY, sizeof(double), IPC_CREAT | IPC_EXCL); 
+  int sm_id = shmget(SHM_KEY, sizeof(int), IPC_CREAT | 0644); 
   if (sm_id != -1){
-    shmat(sm_id, 0, 0);
+    //shmat(sm_id, 0, 0);
     printf("shared memory created: %d\n", SHM_KEY);
   }
   else{
