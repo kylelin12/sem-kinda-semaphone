@@ -25,11 +25,11 @@ void viewstory(){
 }
 
 //creates a semaphore... or doesnt
-void semaphore_create(){
+int semaphore_create(){
   int sem_id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
   int val;
   // Exists?
-  if (sem_id){
+  if (sem_id != -1){
     // create a semaphore
     int semaphore;
     union semun su;
@@ -38,10 +38,7 @@ void semaphore_create(){
     printf("semaphore created: %d\n", sem_id);
     printf("value set: %d\n", val);
   } 
-  else{
-    // semaphore exists
-    printf("semaphore already exists\n");
-  }
+  return sem_id;
 }
 
 //creates a story... or doesnt.
@@ -70,9 +67,13 @@ void sm_create(){
 
 //creates a semaphore, story, shared memory... or doesnt.
 void all_create(){
-  semaphore_create();
-  story_create();
-  sm_create();
+  int sem_id = semaphore_create();
+  if (sem_id != -1) {
+    story_create(sem_id);
+    sm_create();
+  } else {
+    printf("Cannot create. Already exists!\n");
+  }
 }
 
 //prints the story... or doesnt
