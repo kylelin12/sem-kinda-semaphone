@@ -25,7 +25,8 @@ void s_create(char * n){
     printf("semaphore created: %d\n", id);
     printf("value set: %s\n", n);
     //makes a new story
-    FILE *fp = fopen("storytext.txt", "ab+");
+    //wb+: Truncate to zero length or create file for update
+    FILE *fp = fopen("storytext.txt", "wb+");
     fclose(fp);
     printf("new storytext.txt created\n");
   } 
