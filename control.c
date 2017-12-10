@@ -22,15 +22,15 @@ void viewstory(){
 
 //creates a semaphore... or doesnt
 void semaphore_create(){
-  int id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
+  int sem_id = semget(SEM_KEY, 1, IPC_CREAT | IPC_EXCL | 0664);
   // if -1, it existed, if not, semaphore didnt exist
-  if (id != -1){
+  if (sem_id != -1){
     // create a semaphore
     int semaphore;
     union semun su;
     su.val = 1;
-    semctl(id, 0, SETVAL, su);
-    printf("semaphore created: %d\n", id);
+    semctl(sem_id, 0, SETVAL, su);
+    printf("semaphore created: %d\n", sem_id);
     printf("value set: %s\n", su);
   } 
   else{
@@ -81,12 +81,12 @@ void s_value(){
 
 //removes the semaphore... or doesnt
 void semaphore_remove(){
-  int id = semget(SEM_KEY, 0, 0);
-  if(id == -1){
+  int sem_id = semget(SEM_KEY, 0, 0);
+  if(sem_id == -1){
     printf("error: semaphore doesnt exist or no access to it\n");
   }
   else{
-    printf("semaphore removed %d\n", semctl(id, 0, IPC_RMID));
+    printf("semaphore removed %d\n", semctl(sem_id, 0, IPC_RMID));
   }
 }
 
@@ -103,12 +103,12 @@ void story_remove(){
 
 //removes the shared memory... or doesnt
 void sm_remove(){
-  int sm = shmget(SHM_KEY, 0, 0);
-  if(sm == -1){
+  int sm_id = shmget(SHM_KEY, 0, 0);
+  if(sm_id == -1){
     printf("error: shared doesnt exist or no access to it\n");
   }
   else{
-    printf("shared memory removed: %d\n", shmctl(sm, 0, IPC_RMID));
+    printf("shared memory removed: %d\n", shmctl(sm_id, 0, IPC_RMID));
   }
 }
 
