@@ -7,13 +7,6 @@ control:
 write:
 	gcc -o write write.c
 
-clean:
-	rm *~
-	clear
-
 cleanall:
-	rm control
-	rm write
-	clear
-	rm *~
+	rm -f control write a.out *~ storytext.txt
 	clear
