@@ -5,16 +5,17 @@ void viewstory(){
   char * line = NULL;
   size_t num = 0;
   ssize_t read;
-  FILE *fp = fopen("storytext", "r");
+  FILE *fp = fopen("storytext.txt", "r");
   if(fp == NULL){
     //story might not exist or something may have happened to path configs
     printf("Error in trying to access storytext.txt\n");
   }
   else{
+    printf("Viewing story:\n\n");
     while ((read = getline(&line, &num, fp)) != -1) {
       printf("%s", line);
     }
-    printf("\n");
+    printf("\nEnd of story\n");
     fclose(fp);
   }
 }
@@ -102,7 +103,7 @@ void story_remove(){
 //removes the shared memory... or doesnt
 void sm_remove(){
   int sm = shmget(KEY, 0, 0);
-  if(id == -1){
+  if(sm == -1){
     printf("error: shared doesnt exist or no access to it\n");
   }
   else{
