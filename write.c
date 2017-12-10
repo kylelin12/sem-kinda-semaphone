@@ -10,11 +10,16 @@ static void sighandler(int signo){
 
 void last_line(FILE *fp, int *size) {
   printf("The last line entered was: \n");
-  char *lline = (char *)calloc(1, *size + 1);
-  lseek(fileno(fp), -1 * *size, SEEK_END);
-  read(fileno(fp), lline, *size);
-  printf("%s\n", lline);
-  free(lline);
+  if(size == -1){
+    printf("\n");
+  }
+  else{
+    char *lline = (char *)calloc(1, *size + 1);
+    lseek(fileno(fp), -1 * *size, SEEK_END);
+    read(fileno(fp), lline, *size);
+    printf("%s\n", lline);
+    free(lline);
+  }
 }
 
 void write_story(FILE *fp, char *line) {
@@ -55,7 +60,7 @@ int main(){
   last_line(fp, size); // Prints latest line
 
   // User input
-  printf("\n[testing] Please input the next line:\n");
+  printf("\nPlease input the next line:\n");
   char line[1024];
   fgets(line, sizeof(line), stdin);
   printf("You inputted: %s\n", line);
