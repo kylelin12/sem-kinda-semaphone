@@ -75,7 +75,8 @@ int main(){
   write_story(line);
   printf("\nTESTING\n");
   // Size of new line
-  *size = strlen(line);
+  int *new_size = (int *)strlen(line);
+  size = new_size;
   printf("\nTESTING2\n");
   shmdt(size);
   printf("\nTESTING3\n");
