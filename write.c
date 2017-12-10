@@ -10,7 +10,8 @@ static void sighandler(int signo){
 
 void last_line(FILE *fp, int *size) {
   printf("The last line entered was: \n");
-  if(size == -1){
+  int *bad = (int *)-1;
+  if(size == bad){
     printf("\n");
   }
   else{
@@ -22,9 +23,12 @@ void last_line(FILE *fp, int *size) {
   }
 }
 
-void write_story(FILE *fp, char *line) {
-  lseek(fileno(fp), 0, SEEK_END);
-  write(fileno(fp), line, strlen(line));
+void write_story(char *line) {
+  //lseek(fileno(fp), 0, SEEK_END);
+  //write(fileno(fp), line, strlen(line));
+  FILE *fp = fopen("storytext.txt", "a");
+  fprintf(fp, "%s", line);
+  fclose(fp);
 }
 
 int main(){
@@ -65,16 +69,21 @@ int main(){
   fgets(line, sizeof(line), stdin);
   printf("You inputted: %s\n", line);
 
+  fclose(fp);
   // Write to file
-  write_story(fp, line);
-
+  //write_story(fp, line);
+  write_story(line);
+  printf("\nTESTING\n");
   // Size of new line
   *size = strlen(line);
+  printf("\nTESTING2\n");
   shmdt(size);
-
+  printf("\nTESTING3\n");
   // UP(semaphore)
   sbuf.sem_op = 1;
+  printf("\nTESTING4\n");
   semop(sem_id, &sbuf, 1);
+  printf("\nTESTING5\n");
 
   return 0;
 
