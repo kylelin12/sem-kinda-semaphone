@@ -61,6 +61,8 @@ int main(){
 
   // Write to file
   write_story(fd, line);
+  //write_story(line);
+  
 
   // Size of new line
   *size = strlen(line);
